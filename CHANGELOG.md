@@ -1,5 +1,13 @@
 # Changelog
 
+## [3.0.0] - 2025
+### Added
+- Wish Categories with filter function
+- Emoji Reactions with change and remove support
+- Global Donor Leaderboard top 3 ranking
+- Donor total tracking across all wishes
+- Full V3 frontend with tabs and leaderboard
+
 ## [2.0.0] - 2025
 ### Added
 - Wish deadlines with auto expiry refunds
