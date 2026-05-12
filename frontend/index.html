@@ -1,179 +1,342 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
+  <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>On-Chain Wishlist on Base</title>
+  <title>On-Chain Wishlist V2 on Base</title>
   <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-    body { font-family: Arial, sans-serif; background: #0a0a0a; color: #fff; padding: 20px; }
-    .container { max-width: 800px; margin: 0 auto; }
-    h1 { color: #0052ff; text-align: center; margin-bottom: 10px; }
-    .subtitle { text-align: center; color: #888; margin-bottom: 30px; }
-    .contract-address { background: #111; border: 1px solid #222; border-radius: 8px; padding: 12px; margin-bottom: 30px; font-size: 12px; color: #888; word-break: break-all; }
-    .contract-address a { color: #0052ff; }
-    .card { background: #111; border: 1px solid #222; border-radius: 12px; padding: 20px; margin-bottom: 20px; }
-    .card h2 { color: #0052ff; margin-bottom: 15px; }
-    input, textarea { width: 100%; padding: 10px; margin-bottom: 10px; background: #1a1a1a; border: 1px solid #333; border-radius: 8px; color: #fff; font-size: 14px; }
-    button { padding: 12px 24px; border-radius: 8px; border: none; cursor: pointer; font-size: 14px; font-weight: bold; }
-    .btn-primary { background: #0052ff; color: white; width: 100%; }
-    .btn-primary:hover { background: #0040cc; }
-    .btn-connect { background: #0052ff; color: white; width: 100%; margin-bottom: 20px; }
-    .wallet-info { background: #1a1a1a; border-radius: 8px; padding: 10px; margin-bottom: 20px; font-size: 13px; color: #888; }
-    .wish-card { background: #1a1a1a; border-radius: 10px; padding: 15px; margin-bottom: 15px; border: 1px solid #333; }
-    .wish-title { font-size: 16px; font-weight: bold; margin-bottom: 5px; }
-    .wish-desc { font-size: 13px; color: #888; margin-bottom: 10px; }
-    .progress-bar { background: #333; border-radius: 10px; height: 8px; margin-bottom: 8px; }
-    .progress-fill { background: #0052ff; border-radius: 10px; height: 8px; transition: width 0.3s; }
-    .wish-stats { display: flex; justify-content: space-between; font-size: 12px; color: #888; margin-bottom: 10px; }
-    .badge { display: inline-block; padding: 3px 8px; border-radius: 20px; font-size: 11px; font-weight: bold; }
-    .badge-funded { background: #00ff88; color: #000; }
-    .badge-cancelled { background: #ff4444; color: #fff; }
-    .badge-active { background: #0052ff; color: #fff; }
-    .status { text-align: center; padding: 10px; color: #888; font-size: 13px; }
-    .error { color: #ff4444; font-size: 13px; margin-top: 5px; }
-    .success { color: #00ff88; font-size: 13px; margin-top: 5px; }
+    *{margin:0;padding:0;box-sizing:border-box}
+    body{font-family:Arial,sans-serif;background:#0a0a0a;color:#fff;padding:20px}
+    .container{max-width:860px;margin:0 auto}
+    h1{color:#0052ff;text-align:center;margin-bottom:5px;font-size:28px}
+    .subtitle{text-align:center;color:#888;margin-bottom:25px;font-size:14px}
+    .badge-v2{background:#0052ff;color:#fff;font-size:11px;padding:2px 8px;border-radius:20px;margin-left:8px}
+    .contract-box{background:#111;border:1px solid #222;border-radius:8px;padding:12px;margin-bottom:20px;font-size:12px;color:#888;word-break:break-all}
+    .contract-box a{color:#0052ff}
+    .features{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:25px}
+    .feature{background:#111;border:1px solid #222;border-radius:8px;padding:12px;text-align:center;font-size:12px}
+    .feature span{font-size:20px;display:block;margin-bottom:5px}
+    .tabs{display:flex;gap:5px;margin-bottom:20px;flex-wrap:wrap}
+    .tab{padding:8px 16px;border-radius:8px;border:1px solid #333;background:#111;color:#888;cursor:pointer;font-size:13px}
+    .tab.active{background:#0052ff;color:#fff;border-color:#0052ff}
+    .panel{display:none}.panel.active{display:block}
+    .card{background:#111;border:1px solid #222;border-radius:12px;padding:20px;margin-bottom:20px}
+    .card h2{color:#0052ff;margin-bottom:15px;font-size:16px}
+    input,textarea,select{width:100%;padding:10px;margin-bottom:10px;background:#1a1a1a;border:1px solid #333;border-radius:8px;color:#fff;font-size:14px}
+    button{padding:11px 20px;border-radius:8px;border:none;cursor:pointer;font-size:14px;font-weight:bold}
+    .btn-blue{background:#0052ff;color:#fff;width:100%}
+    .btn-blue:hover{background:#0040cc}
+    .btn-connect{background:#0052ff;color:#fff;width:100%;margin-bottom:15px;padding:13px}
+    .wallet-bar{background:#1a1a1a;border-radius:8px;padding:10px;margin-bottom:20px;font-size:13px;color:#888}
+    .wish-card{background:#1a1a1a;border-radius:10px;padding:16px;margin-bottom:14px;border:1px solid #2a2a2a}
+    .wish-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
+    .wish-title{font-size:15px;font-weight:bold}
+    .wish-desc{font-size:13px;color:#888;margin-bottom:10px}
+    .progress-bar{background:#333;border-radius:10px;height:8px;margin-bottom:8px}
+    .progress-fill{background:#0052ff;border-radius:10px;height:8px;transition:width .3s}
+    .wish-stats{display:flex;justify-content:space-between;font-size:12px;color:#888;margin-bottom:8px}
+    .wish-meta{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px}
+    .badge{display:inline-block;padding:3px 8px;border-radius:20px;font-size:11px;font-weight:bold}
+    .b-active{background:#0052ff;color:#fff}
+    .b-funded{background:#00ff88;color:#000}
+    .b-cancelled{background:#ff4444;color:#fff}
+    .b-private{background:#9945ff;color:#fff}
+    .b-expired{background:#ff8800;color:#fff}
+    .b-top{background:#ffd700;color:#000}
+    .messages-box{background:#0f0f0f;border-radius:8px;padding:10px;margin-top:10px}
+    .message-item{border-bottom:1px solid #222;padding:8px 0;font-size:12px}
+    .message-item:last-child{border-bottom:none}
+    .message-sender{color:#0052ff;font-size:11px;margin-bottom:3px}
+    .message-text{color:#ccc}
+    .message-amount{color:#00ff88;font-size:11px;float:right}
+    .status{text-align:center;padding:10px;color:#888;font-size:13px}
+    .success{color:#00ff88;font-size:13px;margin-top:5px}
+    .error{color:#ff4444;font-size:13px;margin-top:5px}
+    .top-donor-box{background:#1a1400;border:1px solid #ffd70033;border-radius:8px;padding:8px 12px;font-size:12px;margin-top:8px}
+    .deadline-box{font-size:12px;color:#ff8800;margin-top:5px}
   </style>
 </head>
 <body>
-  <div class="container">
-    <h1>🎯 On-Chain Wishlist</h1>
-    <p class="subtitle">Create wishes and let anyone fund them with ETH on Base</p>
+<div class="container">
+  <h1>🎯 On-Chain Wishlist <span class="badge-v2">V2</span></h1>
+  <p class="subtitle">Create wishes with deadlines, messages, top donors and privacy — on Base Mainnet</p>
 
-    <div class="contract-address">
-      📄 Contract: <a href="https://basescan.org/address/0x656B9bc877a7052968Cf8931f2b71150650cD35e" target="_blank">
-        0x656B9bc877a7052968Cf8931f2b71150650cD35e
-      </a>
-    </div>
+  <div class="contract-box">
+    📄 Contract: <a href="https://basescan.org/address/0x656B9bc877a7052968Cf8931f2b71150650cD35e" target="_blank">
+      0x656B9bc877a7052968Cf8931f2b71150650cD35e
+    </a>
+  </div>
 
-    <button class="btn-connect" onclick="connectWallet()">🔗 Connect Wallet</button>
-    <div class="wallet-info" id="walletInfo">Not connected</div>
+  <div class="features">
+    <div class="feature"><span>⏰</span>Deadlines</div>
+    <div class="feature"><span>🏆</span>Top Donor</div>
+    <div class="feature"><span>💬</span>Messages</div>
+    <div class="feature"><span>🔒</span>Private Wishes</div>
+  </div>
 
+  <button class="btn-connect" onclick="connectWallet()">🔗 Connect Wallet</button>
+  <div class="wallet-bar" id="walletInfo">Not connected</div>
+
+  <div class="tabs">
+    <div class="tab active" onclick="showTab('wishes')">📋 All Wishes</div>
+    <div class="tab" onclick="showTab('create')">✨ Create Wish</div>
+    <div class="tab" onclick="showTab('fund')">💰 Fund Wish</div>
+    <div class="tab" onclick="showTab('private')">🔒 Private Wish</div>
+  </div>
+
+  <!-- All Wishes -->
+  <div class="panel active" id="panel-wishes">
     <div class="card">
-      <h2>✨ Create a Wish</h2>
-      <input type="text" id="wishTitle" placeholder="Wish title (e.g. New Laptop)" />
+      <h2>📋 All Wishes</h2>
+      <button class="btn-blue" onclick="loadWishes()" style="margin-bottom:15px">🔄 Load Wishes</button>
+      <div id="wishesList"><p class="status">Click Load Wishes to view all wishes</p></div>
+    </div>
+  </div>
+
+  <!-- Create Wish -->
+  <div class="panel" id="panel-create">
+    <div class="card">
+      <h2>✨ Create Public Wish</h2>
+      <input type="text" id="wishTitle" placeholder="Wish title (e.g. New Laptop)"/>
       <textarea id="wishDesc" rows="3" placeholder="Describe your wish..."></textarea>
-      <input type="number" id="wishGoal" placeholder="Goal amount in ETH (e.g. 0.1)" step="0.001" />
-      <button class="btn-primary" onclick="createWish()">Create Wish</button>
+      <input type="number" id="wishGoal" placeholder="Goal in ETH (e.g. 0.1)" step="0.001"/>
+      <input type="number" id="wishDays" placeholder="Deadline in days (e.g. 30)"/>
+      <button class="btn-blue" onclick="createWish()">Create Public Wish</button>
       <div id="createStatus"></div>
     </div>
 
     <div class="card">
-      <h2>💰 Fund a Wish</h2>
-      <input type="number" id="fundId" placeholder="Wish ID (e.g. 0)" />
-      <input type="number" id="fundAmount" placeholder="Amount in ETH (e.g. 0.01)" step="0.001" />
-      <button class="btn-primary" onclick="fundWish()">Fund Wish</button>
-      <div id="fundStatus"></div>
-    </div>
-
-    <div class="card">
-      <h2>📋 All Wishes</h2>
-      <button class="btn-primary" onclick="loadWishes()" style="margin-bottom:15px">🔄 Load Wishes</button>
-      <div id="wishesList"><p class="status">Click Load Wishes to see all wishes</p></div>
+      <h2>🔒 Create Private Wish</h2>
+      <input type="text" id="pvTitle" placeholder="Wish title"/>
+      <textarea id="pvDesc" rows="2" placeholder="Describe your wish..."></textarea>
+      <input type="number" id="pvGoal" placeholder="Goal in ETH" step="0.001"/>
+      <input type="number" id="pvDays" placeholder="Deadline in days"/>
+      <input type="text" id="pvSecret" placeholder="Secret code (share with funders)"/>
+      <button class="btn-blue" onclick="createPrivateWish()">Create Private Wish</button>
+      <div id="pvCreateStatus"></div>
     </div>
   </div>
 
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/6.7.0/ethers.umd.min.js"></script>
-  <script>
-    const CONTRACT_ADDRESS = "0x656B9bc877a7052968Cf8931f2b71150650cD35e";
-    const ABI = [
-      "function createWish(string,string,uint256) external",
-      "function fundWish(uint256) external payable",
-      "function claimWish(uint256) external",
-      "function cancelWish(uint256) external",
-      "function getWishes() external view returns (tuple(uint256,string,string,uint256,uint256,bool,bool)[])",
-      "function getFundingProgress(uint256) external view returns (uint256)",
-      "function isFullyFunded(uint256) external view returns (bool)"
-    ];
+  <!-- Fund Wish -->
+  <div class="panel" id="panel-fund">
+    <div class="card">
+      <h2>💰 Fund a Public Wish</h2>
+      <input type="number" id="fundId" placeholder="Wish ID (e.g. 0)"/>
+      <input type="number" id="fundAmount" placeholder="Amount in ETH" step="0.001"/>
+      <input type="text" id="fundMsg" placeholder="Leave a message (optional)"/>
+      <button class="btn-blue" onclick="fundWish()">Fund Wish 💙</button>
+      <div id="fundStatus"></div>
+    </div>
+  </div>
 
-    let provider, signer, contract;
+  <!-- Private Wish -->
+  <div class="panel" id="panel-private">
+    <div class="card">
+      <h2>🔒 Fund a Private Wish</h2>
+      <input type="number" id="pvFundId" placeholder="Wish ID"/>
+      <input type="text" id="pvFundSecret" placeholder="Secret code"/>
+      <input type="number" id="pvFundAmount" placeholder="Amount in ETH" step="0.001"/>
+      <input type="text" id="pvFundMsg" placeholder="Leave a message (optional)"/>
+      <button class="btn-blue" onclick="fundPrivateWish()">Fund Private Wish 🔒</button>
+      <div id="pvFundStatus"></div>
+    </div>
 
-    async function connectWallet() {
-      if (!window.ethereum) {
-        alert("Please install MetaMask!");
-        return;
-      }
-      provider = new ethers.BrowserProvider(window.ethereum);
-      await provider.send("eth_requestAccounts", []);
-      signer = await provider.getSigner();
-      const address = await signer.getAddress();
-      const network = await provider.getNetwork();
-      document.getElementById("walletInfo").innerHTML =
-        "✅ Connected: " + address.slice(0,6) + "..." + address.slice(-4) +
-        " | Network ID: " + network.chainId;
-      contract = new ethers.Contract(CONTRACT_ADDRESS, ABI, signer);
-    }
+    <div class="card">
+      <h2>🔑 Verify Secret Code</h2>
+      <input type="number" id="verifyId" placeholder="Wish ID"/>
+      <input type="text" id="verifySecret" placeholder="Secret code to verify"/>
+      <button class="btn-blue" onclick="verifySecret()">Verify Secret</button>
+      <div id="verifyStatus"></div>
+    </div>
+  </div>
+</div>
 
-    async function createWish() {
-      if (!contract) { alert("Connect wallet first!"); return; }
-      const title = document.getElementById("wishTitle").value;
-      const desc = document.getElementById("wishDesc").value;
-      const goal = document.getElementById("wishGoal").value;
-      const status = document.getElementById("createStatus");
-      try {
-        status.innerHTML = '<span class="status">Creating wish...</span>';
-        const tx = await contract.createWish(title, desc, ethers.parseEther(goal));
-        await tx.wait();
-        status.innerHTML = '<span class="success">✅ Wish created successfully!</span>';
-        loadWishes();
-      } catch (e) {
-        status.innerHTML = '<span class="error">❌ ' + e.message + '</span>';
-      }
-    }
+<script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/6.7.0/ethers.umd.min.js"></script>
+<script>
+const CONTRACT_ADDRESS = "0x656B9bc877a7052968Cf8931f2b71150650cD35e";
+const ABI = [
+  "function createWish(string,string,uint256,uint256) external",
+  "function createPrivateWish(string,string,uint256,uint256,string) external",
+  "function fundWish(uint256,string) external payable",
+  "function fundPrivateWish(uint256,string,string) external payable",
+  "function claimWish(uint256) external",
+  "function cancelWish(uint256) external",
+  "function refundExpired(uint256) external",
+  "function getWishes() external view returns (tuple(uint256,string,string,uint256,uint256,uint256,bool,bool,bool,bytes32,address,uint256)[])",
+  "function getMessages(uint256) external view returns (tuple(address,string,uint256,uint256)[])",
+  "function getTopDonor(uint256) external view returns (address,uint256)",
+  "function getFundingProgress(uint256) external view returns (uint256)",
+  "function isExpired(uint256) external view returns (bool)",
+  "function getRemainingTime(uint256) external view returns (uint256)",
+  "function verifySecret(uint256,string) external view returns (bool)"
+];
 
-    async function fundWish() {
-      if (!contract) { alert("Connect wallet first!"); return; }
-      const id = document.getElementById("fundId").value;
-      const amount = document.getElementById("fundAmount").value;
-      const status = document.getElementById("fundStatus");
-      try {
-        status.innerHTML = '<span class="status">Funding wish...</span>';
-        const tx = await contract.fundWish(id, { value: ethers.parseEther(amount) });
-        await tx.wait();
-        status.innerHTML = '<span class="success">✅ Wish funded successfully!</span>';
-        loadWishes();
-      } catch (e) {
-        status.innerHTML = '<span class="error">❌ ' + e.message + '</span>';
-      }
-    }
+let provider, signer, contract;
 
-    async function loadWishes() {
-      if (!contract) { alert("Connect wallet first!"); return; }
-      const list = document.getElementById("wishesList");
-      try {
-        list.innerHTML = '<p class="status">Loading...</p>';
-        const wishes = await contract.getWishes();
-        if (wishes.length === 0) {
-          list.innerHTML = '<p class="status">No wishes yet. Create one above!</p>';
-          return;
+function showTab(name) {
+  document.querySelectorAll(".tab").forEach((t,i) => {
+    t.classList.remove("active");
+    document.querySelectorAll(".panel")[i].classList.remove("active");
+  });
+  const tabs = ["wishes","create","fund","private"];
+  const idx = tabs.indexOf(name);
+  document.querySelectorAll(".tab")[idx].classList.add("active");
+  document.getElementById("panel-"+name).classList.add("active");
+}
+
+async function connectWallet() {
+  if (!window.ethereum) { alert("Install MetaMask!"); return; }
+  provider = new ethers.BrowserProvider(window.ethereum);
+  await provider.send("eth_requestAccounts", []);
+  signer = await provider.getSigner();
+  const address = await signer.getAddress();
+  document.getElementById("walletInfo").innerHTML =
+    "✅ " + address.slice(0,6) + "..." + address.slice(-4) + " connected on Base";
+  contract = new ethers.Contract(CONTRACT_ADDRESS, ABI, signer);
+}
+
+async function createWish() {
+  if (!contract) { alert("Connect wallet!"); return; }
+  const st = document.getElementById("createStatus");
+  try {
+    st.innerHTML = '<span class="status">Creating...</span>';
+    const tx = await contract.createWish(
+      document.getElementById("wishTitle").value,
+      document.getElementById("wishDesc").value,
+      ethers.parseEther(document.getElementById("wishGoal").value),
+      document.getElementById("wishDays").value
+    );
+    await tx.wait();
+    st.innerHTML = '<span class="success">✅ Wish created!</span>';
+  } catch(e) { st.innerHTML = '<span class="error">❌ '+e.message+'</span>'; }
+}
+
+async function createPrivateWish() {
+  if (!contract) { alert("Connect wallet!"); return; }
+  const st = document.getElementById("pvCreateStatus");
+  try {
+    st.innerHTML = '<span class="status">Creating...</span>';
+    const tx = await contract.createPrivateWish(
+      document.getElementById("pvTitle").value,
+      document.getElementById("pvDesc").value,
+      ethers.parseEther(document.getElementById("pvGoal").value),
+      document.getElementById("pvDays").value,
+      document.getElementById("pvSecret").value
+    );
+    await tx.wait();
+    st.innerHTML = '<span class="success">✅ Private wish created!</span>';
+  } catch(e) { st.innerHTML = '<span class="error">❌ '+e.message+'</span>'; }
+}
+
+async function fundWish() {
+  if (!contract) { alert("Connect wallet!"); return; }
+  const st = document.getElementById("fundStatus");
+  try {
+    st.innerHTML = '<span class="status">Funding...</span>';
+    const tx = await contract.fundWish(
+      document.getElementById("fundId").value,
+      document.getElementById("fundMsg").value,
+      { value: ethers.parseEther(document.getElementById("fundAmount").value) }
+    );
+    await tx.wait();
+    st.innerHTML = '<span class="success">✅ Wish funded!</span>';
+    loadWishes();
+  } catch(e) { st.innerHTML = '<span class="error">❌ '+e.message+'</span>'; }
+}
+
+async function fundPrivateWish() {
+  if (!contract) { alert("Connect wallet!"); return; }
+  const st = document.getElementById("pvFundStatus");
+  try {
+    st.innerHTML = '<span class="status">Funding...</span>';
+    const tx = await contract.fundPrivateWish(
+      document.getElementById("pvFundId").value,
+      document.getElementById("pvFundSecret").value,
+      document.getElementById("pvFundMsg").value,
+      { value: ethers.parseEther(document.getElementById("pvFundAmount").value) }
+    );
+    await tx.wait();
+    st.innerHTML = '<span class="success">✅ Private wish funded!</span>';
+  } catch(e) { st.innerHTML = '<span class="error">❌ '+e.message+'</span>'; }
+}
+
+async function verifySecret() {
+  if (!contract) { alert("Connect wallet!"); return; }
+  const st = document.getElementById("verifyStatus");
+  try {
+    const result = await contract.verifySecret(
+      document.getElementById("verifyId").value,
+      document.getElementById("verifySecret").value
+    );
+    st.innerHTML = result
+      ? '<span class="success">✅ Correct secret!</span>'
+      : '<span class="error">❌ Wrong secret!</span>';
+  } catch(e) { st.innerHTML = '<span class="error">❌ '+e.message+'</span>'; }
+}
+
+async function loadWishes() {
+  if (!contract) { alert("Connect wallet!"); return; }
+  const list = document.getElementById("wishesList");
+  try {
+    list.innerHTML = '<p class="status">Loading...</p>';
+    const wishes = await contract.getWishes();
+    if (!wishes.length) { list.innerHTML = '<p class="status">No wishes yet!</p>'; return; }
+    list.innerHTML = "";
+    for (let i = 0; i < wishes.length; i++) {
+      const w = wishes[i];
+      const goal = ethers.formatEther(w[3]);
+      const funded = ethers.formatEther(w[4]);
+      const deadline = new Date(Number(w[5]) * 1000).toLocaleDateString();
+      const claimed = w[6], cancelled = w[7], isPrivate = w[8];
+      const topDonor = w[10], topAmount = ethers.formatEther(w[11]);
+      const progress = goal > 0 ? Math.min((funded/goal)*100,100).toFixed(0) : 0;
+      const now = Date.now()/1000;
+      const expired = Number(w[5]) < now;
+      let badges = "";
+      if (isPrivate) badges += '<span class="badge b-private">🔒 Private</span> ';
+      if (claimed) badges += '<span class="badge b-funded">✅ Claimed</span>';
+      else if (cancelled) badges += '<span class="badge b-cancelled">❌ Cancelled</span>';
+      else if (expired) badges += '<span class="badge b-expired">⏰ Expired</span>';
+      else badges += '<span class="badge b-active">● Active</span>';
+
+      const msgs = await contract.getMessages(i);
+      let msgsHtml = "";
+      if (msgs.length > 0) {
+        msgsHtml = '<div class="messages-box">';
+        for (const m of msgs) {
+          msgsHtml += `<div class="message-item">
+            <div class="message-sender">
+              ${m[0].slice(0,6)}...${m[0].slice(-4)}
+              <span class="message-amount">${ethers.formatEther(m[2])} ETH</span>
+            </div>
+            <div class="message-text">${m[1]}</div>
+          </div>`;
         }
-        list.innerHTML = "";
-        for (let i = 0; i < wishes.length; i++) {
-          const w = wishes[i];
-          const goal = ethers.formatEther(w[3]);
-          const funded = ethers.formatEther(w[4]);
-          const claimed = w[5];
-          const cancelled = w[6];
-          const progress = goal > 0 ? Math.min((funded / goal) * 100, 100).toFixed(0) : 0;
-          let badge = '<span class="badge badge-active">Active</span>';
-          if (claimed) badge = '<span class="badge badge-funded">Claimed</span>';
-          if (cancelled) badge = '<span class="badge badge-cancelled">Cancelled</span>';
-          list.innerHTML += `
-            <div class="wish-card">
-              <div class="wish-title">#${i} — ${w[1]} ${badge}</div>
-              <div class="wish-desc">${w[2]}</div>
-              <div class="progress-bar"><div class="progress-fill" style="width:${progress}%"></div></div>
-              <div class="wish-stats">
-                <span>Funded: ${funded} ETH</span>
-                <span>Goal: ${goal} ETH</span>
-                <span>${progress}%</span>
-              </div>
-            </div>`;
-        }
-      } catch (e) {
-        list.innerHTML = '<span class="error">❌ ' + e.message + '</span>';
+        msgsHtml += "</div>";
       }
+
+      list.innerHTML += `
+        <div class="wish-card">
+          <div class="wish-header">
+            <div class="wish-title">#${i} — ${w[1]}</div>
+            <div>${badges}</div>
+          </div>
+          <div class="wish-desc">${w[2]}</div>
+          <div class="progress-bar"><div class="progress-fill" style="width:${progress}%"></div></div>
+          <div class="wish-stats">
+            <span>Funded: ${funded} ETH</span>
+            <span>Goal: ${goal} ETH</span>
+            <span>${progress}%</span>
+          </div>
+          <div class="deadline-box">⏰ Deadline: ${deadline}</div>
+          ${topDonor !== "0x0000000000000000000000000000000000000000"
+            ? `<div class="top-donor-box">🏆 Top Donor: ${topDonor.slice(0,6)}...${topDonor.slice(-4)} — ${topAmount} ETH</div>`
+            : ""}
+          ${msgsHtml}
+        </div>`;
     }
-  </script>
+  } catch(e) { list.innerHTML = '<span class="error">❌ '+e.message+'</span>'; }
+}
+</script>
 </body>
 </html>
