@@ -152,4 +152,10 @@ describe("WishList V3", function () {
     const wish = await wishlist.getWish(0);
     expect(wish.category).to.equal("Travel");
   });
+
+ it("Reaction count starts at zero for new wish", async () => {
+    await wishlist.createWish("Laptop", "Need MacBook", "Tech", GOAL, DAYS_30);
+    const count = await wishlist.getReactionCount(0, "fire");
+    expect(count).to.equal(0);
+  });
 });
