@@ -158,4 +158,9 @@ describe("WishList V3", function () {
     const count = await wishlist.getReactionCount(0, "fire");
     expect(count).to.equal(0);
   });
+
+ it("getTotalDonors returns zero initially", async () => {
+    const total = await wishlist.getTotalDonors();
+    expect(total).to.equal(0);
+  });
 });
