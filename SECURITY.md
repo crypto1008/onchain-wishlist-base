@@ -14,3 +14,9 @@
 
 ## Reporting a Vulnerability
 Please open an issue on GitHub if you find a vulnerability.
+
+## V2 Security Additions
+- Secret stored as keccak256 hash, never plaintext
+- Deadline enforced at contract level
+- Private wishes reject public funding calls
+- Anyone can trigger expired refunds trustlessly
