@@ -379,11 +379,11 @@ contract WishList {
         uint256 celebrations,
         uint256 muscles
     ) {
-        hearts = reactionCounts[_id][unicode"\u2764\ufe0f"];
-        fires = reactionCounts[_id][unicode"\ud83d\udd25"];
-        stars = reactionCounts[_id][unicode"\u2b50"];
-        celebrations = reactionCounts[_id][unicode"\ud83c\udf89"];
-        muscles = reactionCounts[_id][unicode"\ud83d\udcaa"];
+        hearts = reactionCounts[_id]["heart"];
+        fires = reactionCounts[_id]["fire"];
+        stars = reactionCounts[_id]["star"];
+        celebrations = reactionCounts[_id]["party"];
+        muscles = reactionCounts[_id]["muscle"];
     }
 
     /// @notice Get your reaction on a wish
