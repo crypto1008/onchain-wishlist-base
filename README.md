@@ -58,3 +58,17 @@ npx hardhat run scripts/deploy.js --network base
 - Refunds are automatic on cancellation
 - No external contract calls
 - Tested with full test suite
+
+## FAQ
+
+**Is this safe to use?**
+Yes, the contract is fully tested and deployed on Base Mainnet.
+
+**Can I cancel my wish anytime?**
+Yes, only the owner can cancel and all funders get refunded.
+
+**What happens if goal is not reached?**
+You can cancel the wish and everyone gets their ETH back.
+
+**What are the gas fees?**
+Base Mainnet has very low gas fees, usually under $0.10.
