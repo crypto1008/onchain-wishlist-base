@@ -75,3 +75,8 @@ Base Mainnet has very low gas fees, usually under $0.10.
 
 ## License
 MIT
+
+## Acknowledgements
+- Built on Base Mainnet
+- Powered by Hardhat and OpenZeppelin
+- Inspired by the Base Builder community
