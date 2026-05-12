@@ -16,3 +16,14 @@ Main contract for the On-Chain Wishlist project.
 - WishClaimed
 - WishCancelled
 - RefundIssued
+
+## V3 New Functions
+- getCategories() — list all categories
+- getWishesByCategory(category) — filter wishes
+- reactToWish(id, emoji) — add reaction
+- removeReaction(id) — remove your reaction
+- getReactionCount(id, emoji) — count reactions
+- getMyReaction(id) — get your reaction
+- getLeaderboard() — top 3 donors
+- getDonorTotal(address) — total donated by address
+- getTotalDonors() — unique donor count
