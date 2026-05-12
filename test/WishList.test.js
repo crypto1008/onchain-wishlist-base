@@ -168,4 +168,11 @@ describe("WishList V3", function () {
     const total = await wishlist.getDonorTotal(alice.address);
     expect(total).to.equal(0);
   });
+
+ it("Health category wishes are filtered correctly", async () => {
+    await wishlist.createWish("Gym", "Membership", "Health", GOAL, DAYS_30);
+    await wishlist.createWish("Laptop", "MacBook", "Tech", GOAL, DAYS_30);
+    const healthWishes = await wishlist.getWishesByCategory("Health");
+    expect(healthWishes.length).to.equal(1);
+  });
 });
