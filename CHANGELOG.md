@@ -9,3 +9,10 @@
 - Cancel wish with auto refund
 - Frontend UI with wallet connect
 - Full test suite with 18 tests
+
+## [1.1.0] - Coming Soon
+### Planned
+- Multi-token support
+- Deadline for wishes
+- Social sharing feature
+- Mobile friendly frontend
