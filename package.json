@@ -4,8 +4,10 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
+  "test": "hardhat test",
+  "compile": "hardhat compile",
+  "deploy": "hardhat run scripts/deploy.js --network base"
+	},
   "repository": {
     "type": "git",
     "url": "git+https://github.com/crypto1008/onchain-wishlist-base.git"
