@@ -1,0 +1,11 @@
+{
+  "network": "Base Mainnet",
+  "chainId": 8453,
+  "contracts": {
+    "WishList": {
+      "address": "0x656B9bc877a7052968Cf8931f2b71150650cD35e",
+      "deployer": "0x2e8a4d0a86218C3feA106660c57888F3C7AD6A4E",
+      "basescan": "https://basescan.org/address/0x656B9bc877a7052968Cf8931f2b71150650cD35e"
+    }
+  }
+}
