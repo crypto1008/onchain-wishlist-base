@@ -1,11 +1,21 @@
 {
   "network": "Base Mainnet",
   "chainId": 8453,
-  "contracts": {
-    "WishList": {
+  "versions": {
+    "v1.0.0": {
+      "contract": "WishList",
       "address": "0x656B9bc877a7052968Cf8931f2b71150650cD35e",
-      "deployer": "0x2e8a4d0a86218C3feA106660c57888F3C7AD6A4E",
-      "basescan": "https://basescan.org/address/0x656B9bc877a7052968Cf8931f2b71150650cD35e"
+      "features": ["create", "fund", "claim", "cancel"]
+    },
+    "v2.0.0": {
+      "contract": "WishList V2",
+      "address": "0x656B9bc877a7052968Cf8931f2b71150650cD35e",
+      "features": ["deadlines", "messages", "top donor", "private wishes"]
+    },
+    "v3.0.0": {
+      "contract": "WishList V3",
+      "address": "0x656B9bc877a7052968Cf8931f2b71150650cD35e",
+      "features": ["categories", "reactions", "leaderboard"]
     }
   }
 }
