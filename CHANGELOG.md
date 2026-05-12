@@ -1,5 +1,15 @@
 # Changelog
 
+## [2.0.0] - 2025
+### Added
+- Wish deadlines with auto expiry refunds
+- Top donor tracking per wish
+- Funder messages stored onchain
+- Private wishes with secret code protection
+- refundExpired public function
+- verifySecret view function
+- Upgraded frontend with all new features
+
 ## [1.0.0] - 2025
 ### Added
 - Initial WishList contract deployment on Base Mainnet
