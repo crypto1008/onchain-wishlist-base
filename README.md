@@ -1,6 +1,6 @@
 # On-Chain Wishlist on Base
 
-A smart contract where you create a public wishlist and 
+A smart contract where you create a public wishlist and
 anyone can fund your wishes with ETH on Base Mainnet.
 
 ## Contract Address
