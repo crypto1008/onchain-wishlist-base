@@ -72,3 +72,6 @@ You can cancel the wish and everyone gets their ETH back.
 
 **What are the gas fees?**
 Base Mainnet has very low gas fees, usually under $0.10.
+
+## License
+MIT
