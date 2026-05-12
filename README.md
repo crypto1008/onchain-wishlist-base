@@ -51,3 +51,10 @@ npx hardhat run scripts/deploy.js --network base
 - getFundingProgress(wishId)
 - isFullyFunded(wishId)
 - getContributors(wishId)
+
+## Security
+- Only owner can create, claim or cancel wishes
+- Contributions cannot exceed goal amount
+- Refunds are automatic on cancellation
+- No external contract calls
+- Tested with full test suite
