@@ -163,4 +163,9 @@ describe("WishList V3", function () {
     const total = await wishlist.getTotalDonors();
     expect(total).to.equal(0);
   });
+
+ it("getDonorTotal returns zero for non donor", async () => {
+    const total = await wishlist.getDonorTotal(alice.address);
+    expect(total).to.equal(0);
+  });
 });
