@@ -2,7 +2,7 @@ const { expect } = require("chai");
 const { ethers } = require("hardhat");
 const { time } = require("@nomicfoundation/hardhat-network-helpers");
 
-describe("WishList V2", function () {
+describe("WishList V3", function () {
   let wishlist, owner, alice, bob, charlie;
   const GOAL = ethers.parseEther("1.0");
   const DAYS_30 = 30;
@@ -15,137 +15,135 @@ describe("WishList V2", function () {
 
   // ── Basic Tests ──────────────────────────────────
 
-  it("Owner can create a public wish with deadline", async () => {
-    await wishlist.createWish("Laptop", "Need MacBook", GOAL, DAYS_30);
+  it("Owner can create a public wish with category", async () => {
+    await wishlist.createWish("Laptop", "Need MacBook", "Tech", GOAL, DAYS_30);
     const wish = await wishlist.getWish(0);
     expect(wish.title).to.equal("Laptop");
-    expect(wish.isPrivate).to.equal(false);
-  });
-
-  it("Wish has correct deadline set", async () => {
-    await wishlist.createWish("Laptop", "Need MacBook", GOAL, DAYS_30);
-    const wish = await wishlist.getWish(0);
-    const now = await time.latest();
-    expect(wish.deadline).to.be.gt(now);
+    expect(wish.category).to.equal("Tech");
   });
 
   it("Non owner cannot create a wish", async () => {
     await expect(
-      wishlist.connect(alice).createWish("Test", "Test", GOAL, DAYS_30)
+      wishlist.connect(alice).createWish("Test", "Test", "Tech", GOAL, DAYS_30)
     ).to.be.revertedWith("Not the wishlist owner");
   });
 
-  // ── Deadline Tests ───────────────────────────────
-
-  it("Cannot fund wish after deadline", async () => {
-    await wishlist.createWish("Laptop", "Need MacBook", GOAL, 1);
-    await time.increase(2 * 24 * 60 * 60);
+  it("Cannot create wish with empty category", async () => {
     await expect(
-      wishlist.connect(alice).fundWish(0, "test", { value: ethers.parseEther("0.1") })
-    ).to.be.revertedWith("Wish deadline has passed");
+      wishlist.createWish("Test", "Test", "", GOAL, DAYS_30)
+    ).to.be.revertedWith("Category cannot be empty");
   });
 
-  it("Anyone can trigger refund after expired deadline", async () => {
-    await wishlist.createWish("Laptop", "Need MacBook", GOAL, 1);
-    await wishlist.connect(alice).fundWish(0, "hi", { value: ethers.parseEther("0.5") });
-    await time.increase(2 * 24 * 60 * 60);
-    const before = await ethers.provider.getBalance(alice.address);
-    await wishlist.connect(bob).refundExpired(0);
-    const after = await ethers.provider.getBalance(alice.address);
-    expect(after).to.be.gt(before);
+  // ── Category Tests ───────────────────────────────
+
+  it("Can filter wishes by category", async () => {
+    await wishlist.createWish("Laptop", "Need MacBook", "Tech", GOAL, DAYS_30);
+    await wishlist.createWish("Trip", "Go to Paris", "Travel", GOAL, DAYS_30);
+    await wishlist.createWish("Phone", "Need iPhone", "Tech", GOAL, DAYS_30);
+    const techWishes = await wishlist.getWishesByCategory("Tech");
+    expect(techWishes.length).to.equal(2);
   });
 
-  it("isExpired returns true after deadline", async () => {
-    await wishlist.createWish("Laptop", "Need MacBook", GOAL, 1);
-    await time.increase(2 * 24 * 60 * 60);
-    expect(await wishlist.isExpired(0)).to.equal(true);
+  it("Category filter returns empty for unknown category", async () => {
+    await wishlist.createWish("Laptop", "Need MacBook", "Tech", GOAL, DAYS_30);
+    const result = await wishlist.getWishesByCategory("Food");
+    expect(result.length).to.equal(0);
   });
 
-  it("getRemainingTime returns 0 after deadline", async () => {
-    await wishlist.createWish("Laptop", "Need MacBook", GOAL, 1);
-    await time.increase(2 * 24 * 60 * 60);
-    expect(await wishlist.getRemainingTime(0)).to.equal(0);
+  it("getCategories returns all default categories", async () => {
+    const cats = await wishlist.getCategories();
+    expect(cats.length).to.equal(6);
   });
 
-  // ── Top Donor Tests ──────────────────────────────
+  // ── Reaction Tests ───────────────────────────────
 
-  it("Top donor is tracked correctly", async () => {
-    await wishlist.createWish("Laptop", "Need MacBook", GOAL, DAYS_30);
+  it("User can react to a wish", async () => {
+    await wishlist.createWish("Laptop", "Need MacBook", "Tech", GOAL, DAYS_30);
+    await wishlist.connect(alice).reactToWish(0, "fire");
+    const count = await wishlist.getReactionCount(0, "fire");
+    expect(count).to.equal(1);
+  });
+
+  it("User can change their reaction", async () => {
+    await wishlist.createWish("Laptop", "Need MacBook", "Tech", GOAL, DAYS_30);
+    await wishlist.connect(alice).reactToWish(0, "fire");
+    await wishlist.connect(alice).reactToWish(0, "heart");
+    const fireCount = await wishlist.getReactionCount(0, "fire");
+    const heartCount = await wishlist.getReactionCount(0, "heart");
+    expect(fireCount).to.equal(0);
+    expect(heartCount).to.equal(1);
+  });
+
+  it("Multiple users can react to same wish", async () => {
+    await wishlist.createWish("Laptop", "Need MacBook", "Tech", GOAL, DAYS_30);
+    await wishlist.connect(alice).reactToWish(0, "fire");
+    await wishlist.connect(bob).reactToWish(0, "fire");
+    await wishlist.connect(charlie).reactToWish(0, "heart");
+    const fireCount = await wishlist.getReactionCount(0, "fire");
+    expect(fireCount).to.equal(2);
+  });
+
+  it("User can remove their reaction", async () => {
+    await wishlist.createWish("Laptop", "Need MacBook", "Tech", GOAL, DAYS_30);
+    await wishlist.connect(alice).reactToWish(0, "fire");
+    await wishlist.connect(alice).removeReaction(0);
+    const count = await wishlist.getReactionCount(0, "fire");
+    expect(count).to.equal(0);
+  });
+
+  it("Cannot remove reaction if none exists", async () => {
+    await wishlist.createWish("Laptop", "Need MacBook", "Tech", GOAL, DAYS_30);
+    await expect(
+      wishlist.connect(alice).removeReaction(0)
+    ).to.be.revertedWith("No reaction to remove");
+  });
+
+  it("getMyReaction returns correct reaction", async () => {
+    await wishlist.createWish("Laptop", "Need MacBook", "Tech", GOAL, DAYS_30);
+    await wishlist.connect(alice).reactToWish(0, "star");
+    const reaction = await wishlist.connect(alice).getMyReaction(0);
+    expect(reaction).to.equal("star");
+  });
+
+  // ── Leaderboard Tests ────────────────────────────
+
+  it("Leaderboard tracks top donor correctly", async () => {
+    await wishlist.createWish("Laptop", "Need MacBook", "Tech", GOAL, DAYS_30);
     await wishlist.connect(alice).fundWish(0, "go!", { value: ethers.parseEther("0.3") });
     await wishlist.connect(bob).fundWish(0, "nice", { value: ethers.parseEther("0.5") });
-    const [topDonor] = await wishlist.getTopDonor(0);
-    expect(topDonor).to.equal(bob.address);
+    const [first] = await wishlist.getLeaderboard();
+    expect(first).to.equal(bob.address);
   });
 
-  it("Top donor updates when someone donates more", async () => {
-    await wishlist.createWish("Laptop", "Need MacBook", GOAL, DAYS_30);
+  it("Leaderboard updates when donor gives more", async () => {
+    await wishlist.createWish("Laptop", "Need MacBook", "Tech", GOAL, DAYS_30);
     await wishlist.connect(bob).fundWish(0, "first", { value: ethers.parseEther("0.3") });
     await wishlist.connect(alice).fundWish(0, "second", { value: ethers.parseEther("0.5") });
-    const [topDonor] = await wishlist.getTopDonor(0);
-    expect(topDonor).to.equal(alice.address);
+    const [first] = await wishlist.getLeaderboard();
+    expect(first).to.equal(alice.address);
   });
 
-  // ── Funder Messages Tests ────────────────────────
-
-  it("Funder can leave a message when funding", async () => {
-    await wishlist.createWish("Laptop", "Need MacBook", GOAL, DAYS_30);
-    await wishlist.connect(alice).fundWish(0, "Happy Birthday!", { value: ethers.parseEther("0.1") });
-    const messages = await wishlist.getMessages(0);
-    expect(messages.length).to.equal(1);
-    expect(messages[0].text).to.equal("Happy Birthday!");
+  it("getDonorTotal returns correct amount", async () => {
+    await wishlist.createWish("Laptop", "Need MacBook", "Tech", GOAL, DAYS_30);
+    await wishlist.connect(alice).fundWish(0, "hi", { value: ethers.parseEther("0.3") });
+    const total = await wishlist.getDonorTotal(alice.address);
+    expect(total).to.equal(ethers.parseEther("0.3"));
   });
 
-  it("Multiple messages are stored correctly", async () => {
-    await wishlist.createWish("Laptop", "Need MacBook", GOAL, DAYS_30);
-    await wishlist.connect(alice).fundWish(0, "From Alice!", { value: ethers.parseEther("0.1") });
-    await wishlist.connect(bob).fundWish(0, "From Bob!", { value: ethers.parseEther("0.1") });
-    const messages = await wishlist.getMessages(0);
-    expect(messages.length).to.equal(2);
+  it("getTotalDonors returns correct count", async () => {
+    await wishlist.createWish("Laptop", "Need MacBook", "Tech", GOAL, DAYS_30);
+    await wishlist.connect(alice).fundWish(0, "hi", { value: ethers.parseEther("0.3") });
+    await wishlist.connect(bob).fundWish(0, "yo", { value: ethers.parseEther("0.2") });
+    const total = await wishlist.getTotalDonors();
+    expect(total).to.equal(2);
   });
 
-  it("Message stores sender address correctly", async () => {
-    await wishlist.createWish("Laptop", "Need MacBook", GOAL, DAYS_30);
-    await wishlist.connect(alice).fundWish(0, "Hi!", { value: ethers.parseEther("0.1") });
-    const messages = await wishlist.getMessages(0);
-    expect(messages[0].sender).to.equal(alice.address);
-  });
-
-  // ── Private Wish Tests ───────────────────────────
-
-  it("Owner can create a private wish", async () => {
-    await wishlist.createPrivateWish("Secret Gift", "Shh!", GOAL, DAYS_30, "mycode123");
-    const wish = await wishlist.getWish(0);
-    expect(wish.isPrivate).to.equal(true);
-  });
-
-  it("Cannot fund private wish without secret", async () => {
-    await wishlist.createPrivateWish("Secret Gift", "Shh!", GOAL, DAYS_30, "mycode123");
-    await expect(
-      wishlist.connect(alice).fundPrivateWish(0, "wrongcode", "hi", { value: ethers.parseEther("0.1") })
-    ).to.be.revertedWith("Wrong secret code");
-  });
-
-  it("Can fund private wish with correct secret", async () => {
-    await wishlist.createPrivateWish("Secret Gift", "Shh!", GOAL, DAYS_30, "mycode123");
-    await wishlist.connect(alice).fundPrivateWish(0, "mycode123", "shhh!", { value: ethers.parseEther("0.5") });
-    const wish = await wishlist.getWish(0);
-    expect(wish.fundedAmount).to.equal(ethers.parseEther("0.5"));
-  });
-
-  it("Cannot fund private wish using public function", async () => {
-    await wishlist.createPrivateWish("Secret Gift", "Shh!", GOAL, DAYS_30, "mycode123");
-    await expect(
-      wishlist.connect(alice).fundWish(0, "hi", { value: ethers.parseEther("0.1") })
-    ).to.be.revertedWith("This wish is private");
-  });
-
-  it("verifySecret returns true for correct secret", async () => {
-    await wishlist.createPrivateWish("Secret Gift", "Shh!", GOAL, DAYS_30, "mycode123");
-    expect(await wishlist.verifySecret(0, "mycode123")).to.equal(true);
-  });
-
-  it("verifySecret returns false for wrong secret", async () => {
-    await wishlist.createPrivateWish("Secret Gift", "Shh!", GOAL, DAYS_30, "mycode123");
-    expect(await wishlist.verifySecret(0, "wrongcode")).to.equal(false);
+  it("Donor total accumulates across multiple wishes", async () => {
+    await wishlist.createWish("Wish 1", "Desc", "Tech", GOAL, DAYS_30);
+    await wishlist.createWish("Wish 2", "Desc", "Gift", GOAL, DAYS_30);
+    await wishlist.connect(alice).fundWish(0, "hi", { value: ethers.parseEther("0.2") });
+    await wishlist.connect(alice).fundWish(1, "hi", { value: ethers.parseEther("0.3") });
+    const total = await wishlist.getDonorTotal(alice.address);
+    expect(total).to.equal(ethers.parseEther("0.5"));
   });
 });
