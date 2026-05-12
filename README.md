@@ -29,3 +29,9 @@ npx hardhat test
 
 ## Deploy
 npx hardhat run scripts/deploy.js --network base
+
+## How It Works
+1. Owner creates a wish with a title and ETH goal
+2. Anyone can send ETH to fund the wish
+3. When goal is reached owner claims the ETH
+4. If cancelled all funders get refunded automatically
