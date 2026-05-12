@@ -146,4 +146,10 @@ describe("WishList V3", function () {
     const total = await wishlist.getDonorTotal(alice.address);
     expect(total).to.equal(ethers.parseEther("0.5"));
   });
+
+ it("Travel category wish is created correctly", async () => {
+    await wishlist.createWish("Paris Trip", "Visit Eiffel Tower", "Travel", GOAL, DAYS_30);
+    const wish = await wishlist.getWish(0);
+    expect(wish.category).to.equal("Travel");
+  });
 });
