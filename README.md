@@ -41,3 +41,13 @@ npx hardhat run scripts/deploy.js --network base
 - Community fund a public good
 - Friends fund a birthday gift
 - Team fund a shared tool or software
+
+## Contract Functions
+- createWish(title, description, goalAmount)
+- fundWish(wishId)
+- claimWish(wishId)
+- cancelWish(wishId)
+- getWishes()
+- getFundingProgress(wishId)
+- isFullyFunded(wishId)
+- getContributors(wishId)
