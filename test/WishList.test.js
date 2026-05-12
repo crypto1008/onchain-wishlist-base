@@ -74,4 +74,73 @@ describe("WishList", function () {
     await wishlist.connect(alice).fundWish(0, { value: GOAL });
     expect(await wishlist.isFullyFunded(0)).to.equal(true);
   });
+
+  it("Cannot fund a cancelled wish", async () => {
+    await wishlist.createWish("Test", "Test", GOAL);
+    await wishlist.cancelWish(0);
+    await expect(
+      wishlist.connect(alice).fundWish(0, { value: ethers.parseEther("0.1") })
+    ).to.be.revertedWith("Wish was cancelled");
+  });
+
+  it("Cannot claim cancelled wish", async () => {
+    await wishlist.createWish("Test", "Test", GOAL);
+    await wishlist.cancelWish(0);
+    await expect(wishlist.claimWish(0)).to.be.revertedWith("Wish was cancelled");
+  });
+
+  it("Multiple funders can contribute to same wish", async () => {
+    await wishlist.createWish("Test", "Test", GOAL);
+    await wishlist.connect(alice).fundWish(0, { value: ethers.parseEther("0.5") });
+    await wishlist.connect(bob).fundWish(0, { value: ethers.parseEther("0.5") });
+    expect(await wishlist.isFullyFunded(0)).to.equal(true);
+  });
+
+  it("Cannot create wish with empty title", async () => {
+    await expect(
+      wishlist.createWish("", "Description", GOAL)
+    ).to.be.revertedWith("Title cannot be empty");
+  });
+
+  it("Cannot create wish with zero goal", async () => {
+    await expect(
+      wishlist.createWish("Test", "Test", 0)
+    ).to.be.revertedWith("Goal must be greater than 0");
+  });
+
+  it("Can create multiple wishes", async () => {
+    await wishlist.createWish("Wish 1", "Desc 1", GOAL);
+    await wishlist.createWish("Wish 2", "Desc 2", GOAL);
+    await wishlist.createWish("Wish 3", "Desc 3", GOAL);
+    const wishes = await wishlist.getWishes();
+    expect(wishes.length).to.equal(3);
+  });
+
+  it("Contributors list is tracked correctly", async () => {
+    await wishlist.createWish("Test", "Test", GOAL);
+    await wishlist.connect(alice).fundWish(0, { value: ethers.parseEther("0.3") });
+    await wishlist.connect(bob).fundWish(0, { value: ethers.parseEther("0.3") });
+    const contribs = await wishlist.getContributors(0);
+    expect(contribs.length).to.equal(2);
+  });
+
+  it("Cannot fund nonexistent wish", async () => {
+    await expect(
+      wishlist.connect(alice).fundWish(99, { value: ethers.parseEther("0.1") })
+    ).to.be.revertedWith("Wish does not exist");
+  });
+
+  it("Cannot claim already claimed wish", async () => {
+    await wishlist.createWish("Test", "Test", GOAL);
+    await wishlist.connect(alice).fundWish(0, { value: GOAL });
+    await wishlist.claimWish(0);
+    await expect(wishlist.claimWish(0)).to.be.revertedWith("Already claimed");
+  });
+
+  it("Funding progress is 100 when fully funded", async () => {
+    await wishlist.createWish("Test", "Test", GOAL);
+    await wishlist.connect(alice).fundWish(0, { value: GOAL });
+    const progress = await wishlist.getFundingProgress(0);
+    expect(progress).to.equal(100);
+  });
 });
