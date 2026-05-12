@@ -35,3 +35,9 @@ npx hardhat run scripts/deploy.js --network base
 2. Anyone can send ETH to fund the wish
 3. When goal is reached owner claims the ETH
 4. If cancelled all funders get refunded automatically
+
+## Use Cases
+- Save for a new laptop or phone
+- Community fund a public good
+- Friends fund a birthday gift
+- Team fund a shared tool or software
