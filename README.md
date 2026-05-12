@@ -3,6 +3,12 @@
 A smart contract where you create a public wishlist and
 anyone can fund your wishes with ETH on Base Mainnet.
 
+## V2 Features
+- ⏰ Wish Deadlines — auto refund after expiry
+- 🏆 Top Donor Badge — biggest contributor tracked onchain
+- 💬 Funder Messages — leave a note when you fund
+- 🔒 Private Wishes — secret code required to fund
+
 ## Contract Address
 0x656B9bc877a7052968Cf8931f2b71150650cD35e
 
