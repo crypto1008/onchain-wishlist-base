@@ -21,6 +21,9 @@ https://basescan.org/address/0x656B9bc877a7052968Cf8931f2b71150650cD35e
 - Owner claims ETH when wish is fully funded
 - Cancel wish and auto refund all contributors
 - Track funding progress percentage
+- 🎁 Wish Categories — Filter by Gift, Tech, Travel, Education, Health
+- ⭐ Wish Reactions — React with ❤️ 🔥 ⭐ 🎉 💪
+- 📊 Donor Leaderboard — Top 3 donors ranked across all wishes
 
 ## Built With
 - Solidity 0.8.20
