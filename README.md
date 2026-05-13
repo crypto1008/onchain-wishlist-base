@@ -24,6 +24,9 @@ https://basescan.org/address/0x656B9bc877a7052968Cf8931f2b71150650cD35e
 - 🎁 Wish Categories — Filter by Gift, Tech, Travel, Education, Health
 - ⭐ Wish Reactions — React with ❤️ 🔥 ⭐ 🎉 💪
 - 📊 Donor Leaderboard — Top 3 donors ranked across all wishes
+- 🎁 Wish Categories — Filter by Gift, Tech, Travel, Education, Health
+- ⭐ Wish Reactions — React with heart fire star party muscle
+- 📊 Donor Leaderboard — Top 3 donors ranked across all wishes
 
 ## Built With
 - Solidity 0.8.20
