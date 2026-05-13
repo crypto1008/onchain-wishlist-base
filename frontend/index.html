@@ -3,63 +3,75 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>On-Chain Wishlist V2 on Base</title>
+  <title>On-Chain Wishlist V3 on Base</title>
   <style>
     *{margin:0;padding:0;box-sizing:border-box}
     body{font-family:Arial,sans-serif;background:#0a0a0a;color:#fff;padding:20px}
-    .container{max-width:860px;margin:0 auto}
+    .container{max-width:900px;margin:0 auto}
     h1{color:#0052ff;text-align:center;margin-bottom:5px;font-size:28px}
-    .subtitle{text-align:center;color:#888;margin-bottom:25px;font-size:14px}
-    .badge-v2{background:#0052ff;color:#fff;font-size:11px;padding:2px 8px;border-radius:20px;margin-left:8px}
+    .subtitle{text-align:center;color:#888;margin-bottom:20px;font-size:14px}
+    .v3-badge{background:#0052ff;color:#fff;font-size:11px;padding:2px 8px;border-radius:20px;margin-left:8px;vertical-align:middle}
     .contract-box{background:#111;border:1px solid #222;border-radius:8px;padding:12px;margin-bottom:20px;font-size:12px;color:#888;word-break:break-all}
     .contract-box a{color:#0052ff}
-    .features{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:25px}
-    .feature{background:#111;border:1px solid #222;border-radius:8px;padding:12px;text-align:center;font-size:12px}
-    .feature span{font-size:20px;display:block;margin-bottom:5px}
+    .features{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:20px}
+    .feature{background:#111;border:1px solid #222;border-radius:8px;padding:12px;text-align:center;font-size:12px;color:#aaa}
+    .feature span{font-size:22px;display:block;margin-bottom:5px}
     .tabs{display:flex;gap:5px;margin-bottom:20px;flex-wrap:wrap}
-    .tab{padding:8px 16px;border-radius:8px;border:1px solid #333;background:#111;color:#888;cursor:pointer;font-size:13px}
-    .tab.active{background:#0052ff;color:#fff;border-color:#0052ff}
+    .tab{padding:9px 16px;border-radius:8px;border:1px solid #333;background:#111;color:#888;cursor:pointer;font-size:13px;transition:all .2s}
+    .tab.active,.tab:hover{background:#0052ff;color:#fff;border-color:#0052ff}
     .panel{display:none}.panel.active{display:block}
     .card{background:#111;border:1px solid #222;border-radius:12px;padding:20px;margin-bottom:20px}
     .card h2{color:#0052ff;margin-bottom:15px;font-size:16px}
     input,textarea,select{width:100%;padding:10px;margin-bottom:10px;background:#1a1a1a;border:1px solid #333;border-radius:8px;color:#fff;font-size:14px}
-    button{padding:11px 20px;border-radius:8px;border:none;cursor:pointer;font-size:14px;font-weight:bold}
+    button{padding:11px 20px;border-radius:8px;border:none;cursor:pointer;font-size:14px;font-weight:bold;transition:all .2s}
     .btn-blue{background:#0052ff;color:#fff;width:100%}
     .btn-blue:hover{background:#0040cc}
-    .btn-connect{background:#0052ff;color:#fff;width:100%;margin-bottom:15px;padding:13px}
+    .btn-connect{background:#0052ff;color:#fff;width:100%;margin-bottom:15px;padding:14px;font-size:15px}
     .wallet-bar{background:#1a1a1a;border-radius:8px;padding:10px;margin-bottom:20px;font-size:13px;color:#888}
     .wish-card{background:#1a1a1a;border-radius:10px;padding:16px;margin-bottom:14px;border:1px solid #2a2a2a}
-    .wish-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
+    .wish-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px}
     .wish-title{font-size:15px;font-weight:bold}
     .wish-desc{font-size:13px;color:#888;margin-bottom:10px}
     .progress-bar{background:#333;border-radius:10px;height:8px;margin-bottom:8px}
-    .progress-fill{background:#0052ff;border-radius:10px;height:8px;transition:width .3s}
+    .progress-fill{background:#0052ff;border-radius:10px;height:8px;transition:width .5s}
     .wish-stats{display:flex;justify-content:space-between;font-size:12px;color:#888;margin-bottom:8px}
-    .wish-meta{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px}
+    .badges-row{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px}
     .badge{display:inline-block;padding:3px 8px;border-radius:20px;font-size:11px;font-weight:bold}
     .b-active{background:#0052ff;color:#fff}
     .b-funded{background:#00ff88;color:#000}
     .b-cancelled{background:#ff4444;color:#fff}
     .b-private{background:#9945ff;color:#fff}
     .b-expired{background:#ff8800;color:#fff}
-    .b-top{background:#ffd700;color:#000}
-    .messages-box{background:#0f0f0f;border-radius:8px;padding:10px;margin-top:10px}
-    .message-item{border-bottom:1px solid #222;padding:8px 0;font-size:12px}
-    .message-item:last-child{border-bottom:none}
-    .message-sender{color:#0052ff;font-size:11px;margin-bottom:3px}
+    .b-cat{background:#333;color:#ccc}
+    .reactions-row{display:flex;gap:8px;margin:10px 0;flex-wrap:wrap}
+    .reaction-btn{background:#1f1f1f;border:1px solid #333;border-radius:20px;padding:5px 12px;color:#fff;cursor:pointer;font-size:13px;display:flex;align-items:center;gap:5px}
+    .reaction-btn:hover{border-color:#0052ff}
+    .reaction-btn.active{border-color:#0052ff;background:#0052ff22}
+    .reaction-count{color:#888;font-size:12px}
+    .messages-box{background:#0f0f0f;border-radius:8px;padding:10px;margin-top:10px;max-height:150px;overflow-y:auto}
+    .message-item{border-bottom:1px solid #1a1a1a;padding:7px 0;font-size:12px}
+    .message-item:last-child{border:none}
+    .message-sender{color:#0052ff;font-size:11px;margin-bottom:2px}
     .message-text{color:#ccc}
     .message-amount{color:#00ff88;font-size:11px;float:right}
+    .top-donor-box{background:#1a1400;border:1px solid #ffd70033;border-radius:8px;padding:8px 12px;font-size:12px;margin-top:8px}
+    .deadline-box{font-size:12px;color:#ff8800;margin-top:6px}
+    .leaderboard-row{display:flex;align-items:center;gap:12px;padding:12px;background:#1a1a1a;border-radius:10px;margin-bottom:8px;border:1px solid #2a2a2a}
+    .lb-rank{font-size:22px;width:35px;text-align:center}
+    .lb-info{flex:1}
+    .lb-address{font-size:13px;color:#fff}
+    .lb-amount{font-size:12px;color:#00ff88}
     .status{text-align:center;padding:10px;color:#888;font-size:13px}
     .success{color:#00ff88;font-size:13px;margin-top:5px}
     .error{color:#ff4444;font-size:13px;margin-top:5px}
-    .top-donor-box{background:#1a1400;border:1px solid #ffd70033;border-radius:8px;padding:8px 12px;font-size:12px;margin-top:8px}
-    .deadline-box{font-size:12px;color:#ff8800;margin-top:5px}
+    .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:15px}
+    @media(max-width:600px){.grid-2{grid-template-columns:1fr}.features{grid-template-columns:1fr 1fr}}
   </style>
 </head>
 <body>
 <div class="container">
-  <h1>🎯 On-Chain Wishlist <span class="badge-v2">V2</span></h1>
-  <p class="subtitle">Create wishes with deadlines, messages, top donors and privacy — on Base Mainnet</p>
+  <h1>🎯 On-Chain Wishlist <span class="v3-badge">V3</span></h1>
+  <p class="subtitle">Categories · Reactions · Leaderboard · Deadlines · Private Wishes — on Base Mainnet</p>
 
   <div class="contract-box">
     📄 Contract: <a href="https://basescan.org/address/0x656B9bc877a7052968Cf8931f2b71150650cD35e" target="_blank">
@@ -68,56 +80,84 @@
   </div>
 
   <div class="features">
-    <div class="feature"><span>⏰</span>Deadlines</div>
-    <div class="feature"><span>🏆</span>Top Donor</div>
-    <div class="feature"><span>💬</span>Messages</div>
-    <div class="feature"><span>🔒</span>Private Wishes</div>
+    <div class="feature"><span>🎁</span>Categories</div>
+    <div class="feature"><span>⭐</span>Reactions</div>
+    <div class="feature"><span>📊</span>Leaderboard</div>
   </div>
 
   <button class="btn-connect" onclick="connectWallet()">🔗 Connect Wallet</button>
-  <div class="wallet-bar" id="walletInfo">Not connected</div>
+  <div class="wallet-bar" id="walletInfo">Not connected — connect your wallet to interact</div>
 
   <div class="tabs">
-    <div class="tab active" onclick="showTab('wishes')">📋 All Wishes</div>
-    <div class="tab" onclick="showTab('create')">✨ Create Wish</div>
-    <div class="tab" onclick="showTab('fund')">💰 Fund Wish</div>
-    <div class="tab" onclick="showTab('private')">🔒 Private Wish</div>
+    <div class="tab active" onclick="showTab('wishes')">📋 Wishes</div>
+    <div class="tab" onclick="showTab('create')">✨ Create</div>
+    <div class="tab" onclick="showTab('fund')">💰 Fund</div>
+    <div class="tab" onclick="showTab('leaderboard')">📊 Leaderboard</div>
+    <div class="tab" onclick="showTab('private')">🔒 Private</div>
   </div>
 
-  <!-- All Wishes -->
+  <!-- WISHES TAB -->
   <div class="panel active" id="panel-wishes">
     <div class="card">
       <h2>📋 All Wishes</h2>
-      <button class="btn-blue" onclick="loadWishes()" style="margin-bottom:15px">🔄 Load Wishes</button>
-      <div id="wishesList"><p class="status">Click Load Wishes to view all wishes</p></div>
+      <div style="display:flex;gap:10px;margin-bottom:15px">
+        <select id="categoryFilter" style="margin:0;flex:1">
+          <option value="">All Categories</option>
+          <option value="Gift">🎁 Gift</option>
+          <option value="Tech">💻 Tech</option>
+          <option value="Travel">✈️ Travel</option>
+          <option value="Education">📚 Education</option>
+          <option value="Health">❤️ Health</option>
+          <option value="Other">📦 Other</option>
+        </select>
+        <button onclick="loadWishes()" style="background:#0052ff;color:#fff;border:none;border-radius:8px;padding:10px 20px;cursor:pointer;font-weight:bold;white-space:nowrap">🔄 Load</button>
+      </div>
+      <div id="wishesList"><p class="status">Connect wallet and click Load to see wishes</p></div>
     </div>
   </div>
 
-  <!-- Create Wish -->
+  <!-- CREATE TAB -->
   <div class="panel" id="panel-create">
-    <div class="card">
-      <h2>✨ Create Public Wish</h2>
-      <input type="text" id="wishTitle" placeholder="Wish title (e.g. New Laptop)"/>
-      <textarea id="wishDesc" rows="3" placeholder="Describe your wish..."></textarea>
-      <input type="number" id="wishGoal" placeholder="Goal in ETH (e.g. 0.1)" step="0.001"/>
-      <input type="number" id="wishDays" placeholder="Deadline in days (e.g. 30)"/>
-      <button class="btn-blue" onclick="createWish()">Create Public Wish</button>
-      <div id="createStatus"></div>
-    </div>
-
-    <div class="card">
-      <h2>🔒 Create Private Wish</h2>
-      <input type="text" id="pvTitle" placeholder="Wish title"/>
-      <textarea id="pvDesc" rows="2" placeholder="Describe your wish..."></textarea>
-      <input type="number" id="pvGoal" placeholder="Goal in ETH" step="0.001"/>
-      <input type="number" id="pvDays" placeholder="Deadline in days"/>
-      <input type="text" id="pvSecret" placeholder="Secret code (share with funders)"/>
-      <button class="btn-blue" onclick="createPrivateWish()">Create Private Wish</button>
-      <div id="pvCreateStatus"></div>
+    <div class="grid-2">
+      <div class="card">
+        <h2>✨ Create Public Wish</h2>
+        <input type="text" id="wishTitle" placeholder="Wish title"/>
+        <textarea id="wishDesc" rows="2" placeholder="Describe your wish..."></textarea>
+        <select id="wishCat">
+          <option value="Gift">🎁 Gift</option>
+          <option value="Tech">💻 Tech</option>
+          <option value="Travel">✈️ Travel</option>
+          <option value="Education">📚 Education</option>
+          <option value="Health">❤️ Health</option>
+          <option value="Other">📦 Other</option>
+        </select>
+        <input type="number" id="wishGoal" placeholder="Goal in ETH (e.g. 0.1)" step="0.001"/>
+        <input type="number" id="wishDays" placeholder="Deadline in days (e.g. 30)"/>
+        <button class="btn-blue" onclick="createWish()">Create Wish ✨</button>
+        <div id="createStatus"></div>
+      </div>
+      <div class="card">
+        <h2>🔒 Create Private Wish</h2>
+        <input type="text" id="pvTitle" placeholder="Wish title"/>
+        <textarea id="pvDesc" rows="2" placeholder="Describe your wish..."></textarea>
+        <select id="pvCat">
+          <option value="Gift">🎁 Gift</option>
+          <option value="Tech">💻 Tech</option>
+          <option value="Travel">✈️ Travel</option>
+          <option value="Education">📚 Education</option>
+          <option value="Health">❤️ Health</option>
+          <option value="Other">📦 Other</option>
+        </select>
+        <input type="number" id="pvGoal" placeholder="Goal in ETH" step="0.001"/>
+        <input type="number" id="pvDays" placeholder="Deadline in days"/>
+        <input type="text" id="pvSecret" placeholder="Secret code"/>
+        <button class="btn-blue" onclick="createPrivateWish()">Create Private 🔒</button>
+        <div id="pvCreateStatus"></div>
+      </div>
     </div>
   </div>
 
-  <!-- Fund Wish -->
+  <!-- FUND TAB -->
   <div class="panel" id="panel-fund">
     <div class="card">
       <h2>💰 Fund a Public Wish</h2>
@@ -127,26 +167,58 @@
       <button class="btn-blue" onclick="fundWish()">Fund Wish 💙</button>
       <div id="fundStatus"></div>
     </div>
+    <div class="card">
+      <h2>⭐ React to a Wish</h2>
+      <input type="number" id="reactId" placeholder="Wish ID"/>
+      <div style="margin-bottom:10px">
+        <p style="font-size:13px;color:#888;margin-bottom:8px">Choose your reaction:</p>
+        <div style="display:flex;gap:8px;flex-wrap:wrap">
+          <button onclick="reactToWish('heart')" class="reaction-btn">❤️</button>
+          <button onclick="reactToWish('fire')" class="reaction-btn">🔥</button>
+          <button onclick="reactToWish('star')" class="reaction-btn">⭐</button>
+          <button onclick="reactToWish('party')" class="reaction-btn">🎉</button>
+          <button onclick="reactToWish('muscle')" class="reaction-btn">💪</button>
+        </div>
+      </div>
+      <button class="btn-blue" style="background:#333;margin-top:5px" onclick="removeReaction()">Remove My Reaction</button>
+      <div id="reactStatus"></div>
+    </div>
   </div>
 
-  <!-- Private Wish -->
-  <div class="panel" id="panel-private">
+  <!-- LEADERBOARD TAB -->
+  <div class="panel" id="panel-leaderboard">
     <div class="card">
-      <h2>🔒 Fund a Private Wish</h2>
-      <input type="number" id="pvFundId" placeholder="Wish ID"/>
-      <input type="text" id="pvFundSecret" placeholder="Secret code"/>
-      <input type="number" id="pvFundAmount" placeholder="Amount in ETH" step="0.001"/>
-      <input type="text" id="pvFundMsg" placeholder="Leave a message (optional)"/>
-      <button class="btn-blue" onclick="fundPrivateWish()">Fund Private Wish 🔒</button>
-      <div id="pvFundStatus"></div>
+      <h2>📊 Top Donors Leaderboard</h2>
+      <button class="btn-blue" onclick="loadLeaderboard()" style="margin-bottom:15px">🔄 Load Leaderboard</button>
+      <div id="leaderboardContent"><p class="status">Click Load to see top donors</p></div>
     </div>
-
     <div class="card">
-      <h2>🔑 Verify Secret Code</h2>
-      <input type="number" id="verifyId" placeholder="Wish ID"/>
-      <input type="text" id="verifySecret" placeholder="Secret code to verify"/>
-      <button class="btn-blue" onclick="verifySecret()">Verify Secret</button>
-      <div id="verifyStatus"></div>
+      <h2>🔍 Check Donor Total</h2>
+      <input type="text" id="donorAddress" placeholder="Wallet address (0x...)"/>
+      <button class="btn-blue" onclick="checkDonor()">Check Total Donated</button>
+      <div id="donorStatus"></div>
+    </div>
+  </div>
+
+  <!-- PRIVATE TAB -->
+  <div class="panel" id="panel-private">
+    <div class="grid-2">
+      <div class="card">
+        <h2>🔒 Fund Private Wish</h2>
+        <input type="number" id="pvFundId" placeholder="Wish ID"/>
+        <input type="text" id="pvFundSecret" placeholder="Secret code"/>
+        <input type="number" id="pvFundAmount" placeholder="Amount in ETH" step="0.001"/>
+        <input type="text" id="pvFundMsg" placeholder="Leave a message (optional)"/>
+        <button class="btn-blue" onclick="fundPrivateWish()">Fund Private Wish</button>
+        <div id="pvFundStatus"></div>
+      </div>
+      <div class="card">
+        <h2>🔑 Verify Secret</h2>
+        <input type="number" id="verifyId" placeholder="Wish ID"/>
+        <input type="text" id="verifySecret" placeholder="Secret code"/>
+        <button class="btn-blue" onclick="verifySecret()">Verify Secret</button>
+        <div id="verifyStatus"></div>
+      </div>
     </div>
   </div>
 </div>
@@ -155,33 +227,44 @@
 <script>
 const CONTRACT_ADDRESS = "0x656B9bc877a7052968Cf8931f2b71150650cD35e";
 const ABI = [
-  "function createWish(string,string,uint256,uint256) external",
-  "function createPrivateWish(string,string,uint256,uint256,string) external",
+  "function createWish(string,string,string,uint256,uint256) external",
+  "function createPrivateWish(string,string,string,uint256,uint256,string) external",
   "function fundWish(uint256,string) external payable",
   "function fundPrivateWish(uint256,string,string) external payable",
   "function claimWish(uint256) external",
   "function cancelWish(uint256) external",
   "function refundExpired(uint256) external",
-  "function getWishes() external view returns (tuple(uint256,string,string,uint256,uint256,uint256,bool,bool,bool,bytes32,address,uint256)[])",
+  "function reactToWish(uint256,string) external",
+  "function removeReaction(uint256) external",
+  "function getWishes() external view returns (tuple(uint256,string,string,string,uint256,uint256,uint256,bool,bool,bool,bytes32,address,uint256)[])",
   "function getMessages(uint256) external view returns (tuple(address,string,uint256,uint256)[])",
   "function getTopDonor(uint256) external view returns (address,uint256)",
+  "function getReactionCount(uint256,string) external view returns (uint256)",
+  "function getMyReaction(uint256) external view returns (string)",
+  "function getLeaderboard() external view returns (address,uint256,address,uint256,address,uint256)",
+  "function getDonorTotal(address) external view returns (uint256)",
+  "function getTotalDonors() external view returns (uint256)",
   "function getFundingProgress(uint256) external view returns (uint256)",
   "function isExpired(uint256) external view returns (bool)",
-  "function getRemainingTime(uint256) external view returns (uint256)",
-  "function verifySecret(uint256,string) external view returns (bool)"
+  "function verifySecret(uint256,string) external view returns (bool)",
+  "function getWishesByCategory(string) external view returns (tuple(uint256,string,string,string,uint256,uint256,uint256,bool,bool,bool,bytes32,address,uint256)[])"
 ];
 
 let provider, signer, contract;
 
+const CATEGORY_EMOJIS = {
+  "Gift":"🎁","Tech":"💻","Travel":"✈️",
+  "Education":"📚","Health":"❤️","Other":"📦"
+};
+
 function showTab(name) {
-  document.querySelectorAll(".tab").forEach((t,i) => {
-    t.classList.remove("active");
-    document.querySelectorAll(".panel")[i].classList.remove("active");
+  const names = ["wishes","create","fund","leaderboard","private"];
+  names.forEach(n => {
+    document.getElementById("panel-"+n).classList.remove("active");
   });
-  const tabs = ["wishes","create","fund","private"];
-  const idx = tabs.indexOf(name);
-  document.querySelectorAll(".tab")[idx].classList.add("active");
+  document.querySelectorAll(".tab").forEach(t => t.classList.remove("active"));
   document.getElementById("panel-"+name).classList.add("active");
+  document.querySelectorAll(".tab")[names.indexOf(name)].classList.add("active");
 }
 
 async function connectWallet() {
@@ -191,64 +274,67 @@ async function connectWallet() {
   signer = await provider.getSigner();
   const address = await signer.getAddress();
   document.getElementById("walletInfo").innerHTML =
-    "✅ " + address.slice(0,6) + "..." + address.slice(-4) + " connected on Base";
+    "✅ " + address.slice(0,6) + "..." + address.slice(-4) + " connected on Base Mainnet";
   contract = new ethers.Contract(CONTRACT_ADDRESS, ABI, signer);
+}
+
+function setStatus(id, msg, type) {
+  document.getElementById(id).innerHTML =
+    `<span class="${type}">${msg}</span>`;
 }
 
 async function createWish() {
   if (!contract) { alert("Connect wallet!"); return; }
-  const st = document.getElementById("createStatus");
   try {
-    st.innerHTML = '<span class="status">Creating...</span>';
+    setStatus("createStatus", "Creating wish...", "status");
     const tx = await contract.createWish(
       document.getElementById("wishTitle").value,
       document.getElementById("wishDesc").value,
+      document.getElementById("wishCat").value,
       ethers.parseEther(document.getElementById("wishGoal").value),
       document.getElementById("wishDays").value
     );
     await tx.wait();
-    st.innerHTML = '<span class="success">✅ Wish created!</span>';
-  } catch(e) { st.innerHTML = '<span class="error">❌ '+e.message+'</span>'; }
+    setStatus("createStatus", "✅ Wish created successfully!", "success");
+  } catch(e) { setStatus("createStatus", "❌ "+e.message, "error"); }
 }
 
 async function createPrivateWish() {
   if (!contract) { alert("Connect wallet!"); return; }
-  const st = document.getElementById("pvCreateStatus");
   try {
-    st.innerHTML = '<span class="status">Creating...</span>';
+    setStatus("pvCreateStatus", "Creating private wish...", "status");
     const tx = await contract.createPrivateWish(
       document.getElementById("pvTitle").value,
       document.getElementById("pvDesc").value,
+      document.getElementById("pvCat").value,
       ethers.parseEther(document.getElementById("pvGoal").value),
       document.getElementById("pvDays").value,
       document.getElementById("pvSecret").value
     );
     await tx.wait();
-    st.innerHTML = '<span class="success">✅ Private wish created!</span>';
-  } catch(e) { st.innerHTML = '<span class="error">❌ '+e.message+'</span>'; }
+    setStatus("pvCreateStatus", "✅ Private wish created!", "success");
+  } catch(e) { setStatus("pvCreateStatus", "❌ "+e.message, "error"); }
 }
 
 async function fundWish() {
   if (!contract) { alert("Connect wallet!"); return; }
-  const st = document.getElementById("fundStatus");
   try {
-    st.innerHTML = '<span class="status">Funding...</span>';
+    setStatus("fundStatus", "Funding wish...", "status");
     const tx = await contract.fundWish(
       document.getElementById("fundId").value,
       document.getElementById("fundMsg").value,
       { value: ethers.parseEther(document.getElementById("fundAmount").value) }
     );
     await tx.wait();
-    st.innerHTML = '<span class="success">✅ Wish funded!</span>';
+    setStatus("fundStatus", "✅ Wish funded!", "success");
     loadWishes();
-  } catch(e) { st.innerHTML = '<span class="error">❌ '+e.message+'</span>'; }
+  } catch(e) { setStatus("fundStatus", "❌ "+e.message, "error"); }
 }
 
 async function fundPrivateWish() {
   if (!contract) { alert("Connect wallet!"); return; }
-  const st = document.getElementById("pvFundStatus");
   try {
-    st.innerHTML = '<span class="status">Funding...</span>';
+    setStatus("pvFundStatus", "Funding...", "status");
     const tx = await contract.fundPrivateWish(
       document.getElementById("pvFundId").value,
       document.getElementById("pvFundSecret").value,
@@ -256,57 +342,141 @@ async function fundPrivateWish() {
       { value: ethers.parseEther(document.getElementById("pvFundAmount").value) }
     );
     await tx.wait();
-    st.innerHTML = '<span class="success">✅ Private wish funded!</span>';
-  } catch(e) { st.innerHTML = '<span class="error">❌ '+e.message+'</span>'; }
+    setStatus("pvFundStatus", "✅ Private wish funded!", "success");
+  } catch(e) { setStatus("pvFundStatus", "❌ "+e.message, "error"); }
+}
+
+async function reactToWish(emoji) {
+  if (!contract) { alert("Connect wallet!"); return; }
+  try {
+    setStatus("reactStatus", "Reacting...", "status");
+    const id = document.getElementById("reactId").value;
+    const tx = await contract.reactToWish(id, emoji);
+    await tx.wait();
+    setStatus("reactStatus", "✅ Reaction added!", "success");
+  } catch(e) { setStatus("reactStatus", "❌ "+e.message, "error"); }
+}
+
+async function removeReaction() {
+  if (!contract) { alert("Connect wallet!"); return; }
+  try {
+    setStatus("reactStatus", "Removing...", "status");
+    const id = document.getElementById("reactId").value;
+    const tx = await contract.removeReaction(id);
+    await tx.wait();
+    setStatus("reactStatus", "✅ Reaction removed!", "success");
+  } catch(e) { setStatus("reactStatus", "❌ "+e.message, "error"); }
 }
 
 async function verifySecret() {
   if (!contract) { alert("Connect wallet!"); return; }
-  const st = document.getElementById("verifyStatus");
   try {
     const result = await contract.verifySecret(
       document.getElementById("verifyId").value,
       document.getElementById("verifySecret").value
     );
-    st.innerHTML = result
-      ? '<span class="success">✅ Correct secret!</span>'
-      : '<span class="error">❌ Wrong secret!</span>';
-  } catch(e) { st.innerHTML = '<span class="error">❌ '+e.message+'</span>'; }
+    setStatus("verifyStatus",
+      result ? "✅ Correct secret!" : "❌ Wrong secret!",
+      result ? "success" : "error"
+    );
+  } catch(e) { setStatus("verifyStatus", "❌ "+e.message, "error"); }
+}
+
+async function loadLeaderboard() {
+  if (!contract) { alert("Connect wallet!"); return; }
+  const box = document.getElementById("leaderboardContent");
+  try {
+    box.innerHTML = '<p class="status">Loading...</p>';
+    const [f,fa,s,sa,t,ta] = await contract.getLeaderboard();
+    const total = await contract.getTotalDonors();
+    const medals = ["🥇","🥈","🥉"];
+    const entries = [[f,fa],[s,sa],[t,ta]];
+    const zero = "0x0000000000000000000000000000000000000000";
+    box.innerHTML = `<p style="font-size:13px;color:#888;margin-bottom:12px">Total unique donors: ${total}</p>`;
+    entries.forEach(([addr, amt], i) => {
+      if (addr === zero) return;
+      box.innerHTML += `
+        <div class="leaderboard-row">
+          <div class="lb-rank">${medals[i]}</div>
+          <div class="lb-info">
+            <div class="lb-address">${addr.slice(0,8)}...${addr.slice(-6)}</div>
+            <div class="lb-amount">${ethers.formatEther(amt)} ETH total donated</div>
+          </div>
+        </div>`;
+    });
+    if (box.innerHTML.indexOf("leaderboard-row") === -1) {
+      box.innerHTML += '<p class="status">No donors yet!</p>';
+    }
+  } catch(e) { box.innerHTML = '<span class="error">❌ '+e.message+'</span>'; }
+}
+
+async function checkDonor() {
+  if (!contract) { alert("Connect wallet!"); return; }
+  try {
+    const addr = document.getElementById("donorAddress").value;
+    const total = await contract.getDonorTotal(addr);
+    setStatus("donorStatus",
+      "✅ Total donated: " + ethers.formatEther(total) + " ETH",
+      "success"
+    );
+  } catch(e) { setStatus("donorStatus", "❌ "+e.message, "error"); }
 }
 
 async function loadWishes() {
   if (!contract) { alert("Connect wallet!"); return; }
   const list = document.getElementById("wishesList");
+  const catFilter = document.getElementById("categoryFilter").value;
   try {
     list.innerHTML = '<p class="status">Loading...</p>';
-    const wishes = await contract.getWishes();
-    if (!wishes.length) { list.innerHTML = '<p class="status">No wishes yet!</p>'; return; }
+    const wishes = catFilter
+      ? await contract.getWishesByCategory(catFilter)
+      : await contract.getWishes();
+
+    if (!wishes.length) {
+      list.innerHTML = '<p class="status">No wishes found!</p>';
+      return;
+    }
     list.innerHTML = "";
+
     for (let i = 0; i < wishes.length; i++) {
       const w = wishes[i];
-      const goal = ethers.formatEther(w[3]);
-      const funded = ethers.formatEther(w[4]);
-      const deadline = new Date(Number(w[5]) * 1000).toLocaleDateString();
-      const claimed = w[6], cancelled = w[7], isPrivate = w[8];
-      const topDonor = w[10], topAmount = ethers.formatEther(w[11]);
+      const id = Number(w[0]);
+      const goal = ethers.formatEther(w[4]);
+      const funded = ethers.formatEther(w[5]);
+      const deadline = new Date(Number(w[6])*1000).toLocaleDateString();
+      const claimed = w[7], cancelled = w[8], isPrivate = w[9];
+      const topDonor = w[11], topAmt = ethers.formatEther(w[12]);
+      const cat = w[3];
+      const catEmoji = CATEGORY_EMOJIS[cat] || "📦";
       const progress = goal > 0 ? Math.min((funded/goal)*100,100).toFixed(0) : 0;
       const now = Date.now()/1000;
-      const expired = Number(w[5]) < now;
-      let badges = "";
-      if (isPrivate) badges += '<span class="badge b-private">🔒 Private</span> ';
-      if (claimed) badges += '<span class="badge b-funded">✅ Claimed</span>';
-      else if (cancelled) badges += '<span class="badge b-cancelled">❌ Cancelled</span>';
-      else if (expired) badges += '<span class="badge b-expired">⏰ Expired</span>';
-      else badges += '<span class="badge b-active">● Active</span>';
+      const expired = Number(w[6]) < now;
 
-      const msgs = await contract.getMessages(i);
+      let statusBadge = '<span class="badge b-active">● Active</span>';
+      if (claimed) statusBadge = '<span class="badge b-funded">✅ Claimed</span>';
+      else if (cancelled) statusBadge = '<span class="badge b-cancelled">❌ Cancelled</span>';
+      else if (expired) statusBadge = '<span class="badge b-expired">⏰ Expired</span>';
+
+      // Load reactions
+      const emojis = ["heart","fire","star","party","muscle"];
+      const emojiChars = {"heart":"❤️","fire":"🔥","star":"⭐","party":"🎉","muscle":"💪"};
+      let reactionsHtml = '<div class="reactions-row">';
+      for (const e of emojis) {
+        try {
+          const count = await contract.getReactionCount(id, e);
+          reactionsHtml += `<div class="reaction-btn">${emojiChars[e]} <span class="reaction-count">${count}</span></div>`;
+        } catch {}
+      }
+      reactionsHtml += "</div>";
+
+      // Load messages
+      const msgs = await contract.getMessages(id);
       let msgsHtml = "";
       if (msgs.length > 0) {
         msgsHtml = '<div class="messages-box">';
         for (const m of msgs) {
           msgsHtml += `<div class="message-item">
-            <div class="message-sender">
-              ${m[0].slice(0,6)}...${m[0].slice(-4)}
+            <div class="message-sender">${m[0].slice(0,6)}...${m[0].slice(-4)}
               <span class="message-amount">${ethers.formatEther(m[2])} ETH</span>
             </div>
             <div class="message-text">${m[1]}</div>
@@ -318,8 +488,12 @@ async function loadWishes() {
       list.innerHTML += `
         <div class="wish-card">
           <div class="wish-header">
-            <div class="wish-title">#${i} — ${w[1]}</div>
-            <div>${badges}</div>
+            <div class="wish-title">#${id} — ${w[1]}</div>
+            <div>${statusBadge}</div>
+          </div>
+          <div class="badges-row">
+            <span class="badge b-cat">${catEmoji} ${cat}</span>
+            ${isPrivate ? '<span class="badge b-private">🔒 Private</span>' : ""}
           </div>
           <div class="wish-desc">${w[2]}</div>
           <div class="progress-bar"><div class="progress-fill" style="width:${progress}%"></div></div>
@@ -330,12 +504,15 @@ async function loadWishes() {
           </div>
           <div class="deadline-box">⏰ Deadline: ${deadline}</div>
           ${topDonor !== "0x0000000000000000000000000000000000000000"
-            ? `<div class="top-donor-box">🏆 Top Donor: ${topDonor.slice(0,6)}...${topDonor.slice(-4)} — ${topAmount} ETH</div>`
+            ? `<div class="top-donor-box">🏆 Top Donor: ${topDonor.slice(0,6)}...${topDonor.slice(-4)} — ${topAmt} ETH</div>`
             : ""}
+          ${reactionsHtml}
           ${msgsHtml}
         </div>`;
     }
-  } catch(e) { list.innerHTML = '<span class="error">❌ '+e.message+'</span>'; }
+  } catch(e) {
+    list.innerHTML = '<span class="error">❌ '+e.message+'</span>';
+  }
 }
 </script>
 </body>
